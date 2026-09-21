@@ -21,6 +21,7 @@ const client = new MongoClient(mongoUri);
 let database;
 
 app.use(express.json({ limit: '2mb' }));
+app.set('trust proxy', 1);
 app.use(session({
   secret: sessionSecret,
   resave: false,
@@ -49,13 +50,16 @@ app.get('/api/health', (req, res) => res.json({ ok: true }));
 
 app.get('/api/session', (req, res) => res.json({ authenticated: Boolean(req.session.user) }));
 
-app.post('/api/login', (req, res) => {
+app.post('/api/login', (req, res, next) => {
   const { username, password } = req.body || {};
   if (username !== appUsername || password !== appPassword) {
     return res.status(401).json({ error: 'Incorrect username or password' });
   }
   req.session.user = username;
-  res.json({ ok: true });
+  req.session.save((error) => {
+    if (error) return next(error);
+    res.json({ ok: true });
+  });
 });
 
 app.post('/api/logout', (req, res) => {
