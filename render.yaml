@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: lead-ledger
+    runtime: node
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: MONGODB_URI
+        sync: false
+      - key: MONGODB_DB
+        value: lead_ledger
+      - key: APP_USERNAME
+        value: itsruth4
+      - key: APP_PASSWORD
+        sync: false
+      - key: SESSION_SECRET
+        generateValue: true
